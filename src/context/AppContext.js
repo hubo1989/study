@@ -9,7 +9,7 @@ export const AppProvider = ({ children }) => {
   const [rewards, setRewards] = useState([]);
   const [points, setPoints] = useState(0);
   const [history, setHistory] = useState([]);
-  const [currency, setCurrency] = useState('积分');
+  const [currency, setCurrency] = useState('学习币');
   const [isLoading, setIsLoading] = useState(true);
 
   // 初始化应用数据
@@ -56,89 +56,46 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // 任务相关函数
-  const addTask = (task) => {
-    const newTasks = [...tasks, { ...task, id: Date.now().toString() }];
-    setTasks(newTasks);
+  // 添加任务
+  const addTask = task => {
+    setTasks([...tasks, {...task, id: Date.now().toString()}]);
     saveData();
   };
 
-  const updateTask = (id, updatedTask) => {
-    const newTasks = tasks.map(task => 
-      task.id === id ? { ...task, ...updatedTask } : task
+  // 删除任务
+  const deleteTask = taskId => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+    saveData();
+  };
+
+  // 完成任务
+  const completeTask = (taskId, earnedPoints) => {
+    setTasks(
+      tasks.map(task =>
+        task.id === taskId ? {...task, completed: true} : task,
+      ),
     );
-    setTasks(newTasks);
+    setPoints(points + earnedPoints);
     saveData();
   };
 
-  const deleteTask = (id) => {
-    const newTasks = tasks.filter(task => task.id !== id);
-    setTasks(newTasks);
+  // 添加奖励
+  const addReward = reward => {
+    setRewards([...rewards, {...reward, id: Date.now().toString()}]);
     saveData();
   };
 
-  const completeTask = (id) => {
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-      // 添加完成记录
-      const newHistory = [...history, {
-        id: Date.now().toString(),
-        type: 'task',
-        taskId: id,
-        taskName: task.name,
-        points: task.points,
-        date: new Date().toISOString()
-      }];
-      
-      // 更新积分
-      const newPoints = points + task.points;
-      
-      setHistory(newHistory);
-      setPoints(newPoints);
-      saveData();
-    }
-  };
-
-  // 奖励相关函数
-  const addReward = (reward) => {
-    const newRewards = [...rewards, { ...reward, id: Date.now().toString() }];
-    setRewards(newRewards);
+  // 删除奖励
+  const deleteReward = rewardId => {
+    setRewards(rewards.filter(reward => reward.id !== rewardId));
     saveData();
   };
 
-  const updateReward = (id, updatedReward) => {
-    const newRewards = rewards.map(reward => 
-      reward.id === id ? { ...reward, ...updatedReward } : reward
-    );
-    setRewards(newRewards);
-    saveData();
-  };
-
-  const deleteReward = (id) => {
-    const newRewards = rewards.filter(reward => reward.id !== id);
-    setRewards(newRewards);
-    saveData();
-  };
-
-  const redeemReward = (id) => {
-    const reward = rewards.find(r => r.id === id);
+  // 兑换奖励
+  const redeemReward = rewardId => {
+    const reward = rewards.find(r => r.id === rewardId);
     if (reward && points >= reward.cost) {
-      // 添加兑换记录
-      const newHistory = [...history, {
-        id: Date.now().toString(),
-        type: 'reward',
-        rewardId: id,
-        rewardName: reward.name,
-        cost: reward.cost,
-        date: new Date().toISOString()
-      }];
-      
-      // 更新积分
-      const newPoints = points - reward.cost;
-      
-      setHistory(newHistory);
-      setPoints(newPoints);
-      saveData();
+      setPoints(points - reward.cost);
       return true;
     }
     return false;
@@ -190,32 +147,33 @@ export const AppProvider = ({ children }) => {
     setRewards([]);
     setPoints(0);
     setHistory([]);
-    setCurrency('积分');
+    setCurrency('学习币');
     await saveData();
   };
 
+  // 上下文值
+  const contextValue = {
+    tasks,
+    rewards,
+    points,
+    history,
+    currency,
+    isLoading,
+    setCurrency,
+    addTask,
+    deleteTask,
+    completeTask,
+    addReward,
+    deleteReward,
+    redeemReward,
+    importWNGTemplate,
+    exportData,
+    importData,
+    resetData
+  };
+
   return (
-    <AppContext.Provider value={{
-      tasks,
-      rewards,
-      points,
-      history,
-      currency,
-      isLoading,
-      setCurrency,
-      addTask,
-      updateTask,
-      deleteTask,
-      completeTask,
-      addReward,
-      updateReward,
-      deleteReward,
-      redeemReward,
-      importWNGTemplate,
-      exportData,
-      importData,
-      resetData
-    }}>
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );

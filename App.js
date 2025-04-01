@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -18,63 +18,39 @@ import SettingsScreen from './src/screens/SettingsScreen';
 // 创建堆栈导航器
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+const App = () => {
   return (
-    <AppProvider>
-      <StatusBar barStyle="light-content" backgroundColor="#4a6da7" />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: '#4a6da7',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            contentStyle: {
-              backgroundColor: '#f8f9fa',
-            },
-          }}
-        >
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Tasks" 
-            component={TasksScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="TaskDetail" 
-            component={TaskDetailScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Rewards" 
-            component={RewardsScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="RewardDetail" 
-            component={RewardDetailScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Analytics" 
-            component={AnalyticsScreen} 
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen 
-            name="Settings" 
-            component={SettingsScreen} 
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AppProvider>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <AppProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              headerShown: false,
+              contentStyle: {
+                backgroundColor: '#F2F2F7',
+              },
+            }}>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Tasks" component={TasksScreen} />
+            <Stack.Screen name="TaskDetail" component={TaskDetailScreen} />
+            <Stack.Screen name="Rewards" component={RewardsScreen} />
+            <Stack.Screen name="RewardDetail" component={RewardDetailScreen} />
+            <Stack.Screen name="Analytics" component={AnalyticsScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AppProvider>
+    </SafeAreaView>
   );
-} 
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  },
+});
+
+export default App; 
